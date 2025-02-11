@@ -1,27 +1,30 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Use an official lightweight Python image as base
+FROM python:3.9
 
-# Install Microsoft ODBC Driver 18 for SQL Server
-RUN apt-get update && \
-    apt-get install -y curl apt-transport-https && \
-    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-    curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-    apt-get update && \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
-
-
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
+# Install required system dependencies for Microsoft ODBC Driver 18
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    apt-transport-https \
+    unixodbc \
+    unixodbc-dev \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc \
+    && echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/$(lsb_release -rs)/prod $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project to the container
+# Copy application files
 COPY . .
 
-# Expose the port on which the app will run
+# Expose the application port
 EXPOSE 8000
 
-# Run the application using Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
