@@ -1,11 +1,14 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings  # ✅ Use `pydantic_settings`
+import os
 
 
 class Settings(BaseSettings):
-    database_url: str
+    # ✅ Get from environment variables
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
 
     class Config:
-        env_file = ".env"  # Read environment variables from the .env file
+        env_file = ".env"  # ✅ Load variables from .env file
 
 
+# Create an instance of the settings
 settings = Settings()
