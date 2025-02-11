@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import employees, backup, metrics
+from app.routes import employees, backup, metrics, global_data
 
 app = FastAPI(
     title="API Project",
@@ -15,6 +15,7 @@ app.include_router(employees.router, prefix="/departments",
 app.include_router(employees.router, prefix="/jobs", tags=["jobs"])
 app.include_router(backup.router, prefix="/backup", tags=["backup"])
 app.include_router(metrics.router, prefix="/metrics", tags=["metrics"])
+app.include_router(global_data.router, prefix="/data", tags=["global-data"])
 
 if __name__ == "__main__":
     import uvicorn

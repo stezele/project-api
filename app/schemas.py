@@ -28,8 +28,10 @@ class JobSchema(BaseModel):
     class Config:
         orm_mode = True
 
-# Schema for batch insertion of employees
+# Schema for batch insertion
 
 
-class HiredEmployeeBatch(BaseModel):
-    employees: list[HiredEmployeeSchema]
+class GlobalData(BaseModel):
+    hired_employees: list[HiredEmployeeSchema]
+    departments: list[DepartmentSchema]
+    jobs: list[JobSchema]
