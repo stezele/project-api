@@ -7,6 +7,11 @@ from app.core.database import get_db
 router = APIRouter()
 
 
+@router.get("/employees")
+async def get_employees():
+    return {"message": "List of employees"}
+
+
 @router.post("/", response_model=dict)
 def create_employee(employee: HiredEmployeeSchema, db: Session = Depends(get_db)):
     """
@@ -45,3 +50,26 @@ def create_employees_batch(batch: HiredEmployeeBatch, db: Session = Depends(get_
             db.rollback()
             errors.append({"id": emp.id, "error": str(e)})
     return {"inserted": inserted, "errors": errors}
+
+
+@router.post("/batch_insert", response_model=dict)
+def insert_hired_employees(batch: HiredEmployeeBatch, db: Session = Depends(get_db)):
+    """
+    Inserts up to 1000 rows into bronze.hired_employees in a single request.
+    """
+    if len(batch.records) > 1000:
+        raise HTTPException(
+            status_code=400, detail="Batch size cannot exceed 1000 rows.")
+
+    insert_query = text("""
+        INSERT INTO bronze.hired_employees (id, name, datetime, department_id, job_id)
+        VALUES (:id, :name, :datetime, :department_id, :job_id)
+    """)
+
+    try:
+        with db.begin():
+            for record in batch.records:
+                db.execute(insert_query, record)
+        return {"message": f"{len(batch.records)} rows inserted successfully into bronze.hired_employees"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {e}")

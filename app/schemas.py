@@ -31,6 +31,10 @@ class JobSchema(BaseModel):
 # Schema for batch insertion
 
 
+class HiredEmployeeBatch(BaseModel):
+    employees: list[HiredEmployeeSchema]  # ✅ List of employees
+
+
 class GlobalData(BaseModel):
     hired_employees: list[HiredEmployeeSchema]
     departments: list[DepartmentSchema]

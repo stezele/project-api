@@ -39,8 +39,8 @@ def departments_above_avg():
     query = text("""
         WITH hires AS(
             SELECT d.id, d.department, COUNT(he.id) AS hired
-            FROM departments d
-            LEFT JOIN hired_employees he ON d.id=he.department_id AND YEAR(he.datetime)=2021
+            FROM silver.departments d
+            LEFT JOIN silver.hired_employees he ON d.id=he.department_id AND YEAR(he.datetime)=2021
             GROUP BY d.id, d.department
         ),
         avg_hires AS(

@@ -7,15 +7,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Include routers from each module
-app.include_router(employees.router, prefix="/hired_employees",
-                   tags=["hired_employees"])
-app.include_router(employees.router, prefix="/departments",
-                   tags=["departments"])
-app.include_router(employees.router, prefix="/jobs", tags=["jobs"])
-app.include_router(backup.router, prefix="/backup", tags=["backup"])
-app.include_router(metrics.router, prefix="/metrics", tags=["metrics"])
-app.include_router(global_data.router, prefix="/data", tags=["global-data"])
+
+# Include all routers
+app.include_router(employees.router, prefix="/employees", tags=["Employees"])
+app.include_router(backup.router, prefix="/backup", tags=["Backup"])
+app.include_router(metrics.router, prefix="/metrics", tags=["Metrics"])
+app.include_router(global_data.router, prefix="/data", tags=["Data"])
 
 if __name__ == "__main__":
     import uvicorn

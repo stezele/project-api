@@ -6,6 +6,12 @@ from fastavro import writer, parse_schema, reader
 
 router = APIRouter()
 
+ALLOWED_TABLES = ["bronze.hired_employees",
+                  "bronze.departments", "bronze.jobs"]
+
+if table_name not in ALLOWED_TABLES:
+    raise HTTPException(status_code=400, detail="Invalid table")
+
 
 @router.get("/{table_name}", response_model=dict)
 def backup_table(table_name: str):
